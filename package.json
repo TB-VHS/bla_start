@@ -1,12 +1,12 @@
 {
-  "name": "bla_nodb",
+  "name": "bla_start",
   "version": "0.0.1",
-  "main": "app_nodb.js",
+  "main": "app.js",
   "author": "T.",
   "license": "MIT",
   "scripts": {
-    "start": "node app_nodb.js",
-    "devel": "nodemon app_nodb.js",
+    "start": "node app.js",
+    "devel": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
