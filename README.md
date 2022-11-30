@@ -1,6 +1,6 @@
 Sehr einfacher Messenger, konzipiert als Ausgangspunkt für vielerlei Verbesserungen und Erweiterungen.
 
-###Getting started###
+### Getting started
 
 
 ```
