@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>bla - {{ bla_group.displayname }}</title>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed">
+    <link rel="stylesheet" type="text/css" href="/css/uikit.min.css">
+    <style>
+      html,body           { height: 100%; }
+      body                {
+                            background-color: #962121;
+                            background-image: url(/img/textures/swirl.png);
+                          }
+      #big-box            { height: 100%; margin: 0 auto; }
+      #header-box         { height:   5%; background-color: #abcdef; }
+      #msg-box            { height:  75%; overflow-y: scroll; }
+      #footer-box         { height:   5%; background-color: #abcdef; }
+      li                  {
+                            font-family:  'Saira Extra Condensed', 'Noto Color Emoji';
+                            font-size:    24px;
+                          }
+    </style>
+    <script src="/js/uikit.min.js"></script>
+    <script src="/js/uikit-icons.min.js"></script>
+    <script src="/js/zepto.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+
+  <body>
+    <div id="big-box" class="uk-card uk-card-default uk-width-1-1@s uk-width-1-1@m uk-width-1-2@l">
+
+      <div id="header-box" class="uk-card-header">
+        <h3 class="uk-card-title">
+          <span uk-icon="icon: users; ratio: 1.0"></span>
+          &nbsp;
+          <span uk-tooltip="Gruppe">{{ bla_group.displayname }}</span>
+        </h3>
+        <a href="" class="uk-icon-button uk-position-right uk-margin-right uk-margin-top" uk-icon="icon: info; ratio: 2.0"></a>
+        <div uk-dropdown="pos: bottom-center; mode: click">
+          <div class="uk-alert-default" uk-alert>
+          {{!-- <div class="uk-card uk-card-default"> --}}
+            Diese Version des Bla-Messengers ist als eine Art Skizze zu verstehen.<br>
+            Eine Datenbank wird nicht benötigt.<br>
+            <br>
+            <b>\help</b> gibt Tipps zur Bedienung.<br>
+            <br>
+            {{!-- <img src="/svg/logo-gitlab.svg" width="20" height="20" uk-svg>&nbsp;<a href="#">Code auf GitLab</a><br> --}}
+            <span uk-icon="icon: github-alt;"></span>&nbsp;&nbsp;<a href="#">Code auf Github</a><br>
+            <br>
+          </div>
+        </div>
+      </div>
+
+      <div id="msg-box" class="uk-card-body">
+        <ul id="messages" class="uk-list uk-list-striped"></ul>
+      </div>
+
+      <div id="footer-box" class="uk-card-footer">
+        <form id="chat-form" action="" class="uk-position-bottom uk-flex uk-margin-bottom">
+          <span  id="prompt" class="uk-text-bold uk-text-large uk-background-default uk-margin-left"></span>
+          <input id="msg-input" class="uk-input" autocomplete="off" />
+          <button class="uk-button uk-button-primary uk-margin-right">Senden</button>
+        </form>
+      </div>
+
+    </div>
+
+<!-- modal -->
+    <div id="modal" class="uk-flex-top" uk-modal>
+      <div id="modal-box" class="uk-modal-dialog uk-margin-auto-vertical">
+        <div class="uk-modal-header">
+          <h2 class="uk-modal-title uk-text-primary">Willkommen beim <i>bla</i>-Messenger</h2>
+        </div>
+        <div class="uk-modal-body">
+          <p class="uk-text-lead">Benutzer anmelden</p>
+          <p>
+          </p>
+          <form class="uk-form-stacked" method="post" action="/api/user" enctype="application/x-www-form-urlencoded">
+            <div class="uk-margin">
+              <label class="uk-form-label" for="displayname">Mit dem Klicken eines der beiden Buttons akzeptierst du blaCookies. 🍪😋</label>
+              <div class="uk-form-controls">
+                <input type="text" name="displayname" id="displayname" class="uk-input" placeholder="Dein Wunschname">
+              </div>
+            </div>
+            <div class="uk-margin">
+              <div class="uk-form-controls uk-width-1-1 uk-flex uk-flex-between">
+                <button id="btn-anonym" class="uk-button uk-button-secondary">Anonym</button>
+                <button type="submit" class="uk-button uk-button-primary">Mit Wunschnamen anmelden</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+    <script>
+      var socket    = io( '{{ env.url }}' + '{{ env.path }}' )
+      ,   chatForm  = document.getElementById( 'chat-form' )
+      ,   msgInput  = document.getElementById( 'msg-input' )
+      ;
+      chatForm.addEventListener( 'submit'
+      , function( e ){
+          e.preventDefault();
+          if( msgInput.value ){
+            socket.emit( 'message', msgInput.value );
+            msgInput.value = '';
+          }
+      });
+
+      var displayname = getCookieValue( 'displayname' );
+      if( displayname ){
+        $( '#messages' ).append( '<li><span class="uk-text-meta">{{ datetime }}</span> · <span class="uk-text-lead">bla-Server</span>:&nbsp;&nbsp;Hallo ' + displayname + '</li>' );
+      }
+      else{
+        UIkit.modal( '#modal' ).show();
+      }
+      $( '#prompt' ).html( '&nbsp;&nbsp;' + displayname + ':&nbsp;&nbsp;' )
+      msgInput.focus();
+
+      $( '#btn-anonym' ).click( function( ev ){
+        UIkit.modal( '#modal' ).hide();
+      })
+
+      socket.on( 'message', function( msg ){
+        if( typeof msg === 'object' ){
+          switch( msg.type ){
+            case 'posting':
+              $( '#messages' ).append( '<li><span class="uk-text-meta">' + msg.datetimeStr + '</span> · <span class="uk-text-lead">' + msg.displayname + '</span>:&nbsp;&nbsp;' + msg.content + '</li>' );
+              $( '#msg-box' ).scrollTop( $( '#msg-box' ).height() )
+              break;
+            case 'uikit_modal':
+              $( '#modal' ).html( msg.body );
+              UIkit.modal( '#modal' ).show();
+              break;
+            case 'uikit_notification':
+              UIkit.notification( msg.body, msg.options ?? { status: 'primary' });
+              break;
+          }
+
+        }
+        else {
+          console.log( 'Message type <' + typeof msg + '> not supported');
+        }
+
+      });
+
+
+      function getCookieValue( a ){
+        var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
+        return b ? b.pop() : '';
+      }
+
+    </script>
+  </body>
+</html>

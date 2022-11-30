@@ -1,0 +1,5 @@
+BLA_HTTP_HOST=<server ip or name>
+BLA_HTTP_LISTEN=<listen_to_requests_from e.g. localhost or 0.0.0.0>
+BLA_HTTP_PORT=<app running on port e.g. 3000>
+BLA_HTTP_URL=<<server ip or name>:<app running on port e.g. 3000>> #somewhat redundant ;)
+BLA_N_MESSAGES=10 # number of messages, that are saved to be sent to newcomers

@@ -1,0 +1,23 @@
+{
+  "name": "bla_nodb",
+  "version": "0.0.1",
+  "main": "app_nodb.js",
+  "author": "T.",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app_nodb.js",
+    "devel": "nodemon app_nodb.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cookie-parser": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "express-handlebars": "latest",
+    "socket.io": "latest",
+    "winston": "latest"
+  },
+  "devDependencies": {
+    "nodemon": "latest"
+  }
+}
