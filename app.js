@@ -195,7 +195,7 @@ io.on( 'connection'
                       , content:      msg
                       }
         lastMessages.push( message )
-        if( lastMessages.length > BLA_N_MESSAGES ){
+        if( lastMessages.length > process.env.BLA_N_MESSAGES ){
           lastMessages = lastMessages.slice( 1, -1 )
         }
         io.emit( 'message', message )
