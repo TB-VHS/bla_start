@@ -187,7 +187,7 @@ io.on( 'connection'
 /* === emit msg to all clients === */
 
 /* --- replace emojis --- */
-        Object.entries( emojiDict ).forEach( emoji => msg = msg.replace( emoji[0], emoji[1] ))
+        Object.entries( emojiDict ).forEach( emoji => msg = msg.replaceAll( emoji[0], emoji[1] ))
 
         var message = { type:         'posting'
                       , datetimeStr:  new Date().toLocaleString( 'de-de' )
@@ -195,8 +195,9 @@ io.on( 'connection'
                       , content:      msg
                       }
         lastMessages.push( message )
-        lastMessages = lastMessages.slice( 0, process.env.BLA_N_MESSAGES )
-
+        if( lastMessages.length > BLA_N_MESSAGES ){
+          lastMessages = lastMessages.slice( 1, -1 )
+        }
         io.emit( 'message', message )
       }
     })
